@@ -1,0 +1,115 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<style>
+html,body,p {
+	margin: 0;
+	padding: 0;
+}
+body {
+	padding: 30px;
+}
+#texto {
+	width: 100%;
+	height: 200px;
+	padding: 5px;
+	border: #fc0 1px solid;
+	box-sizing: border-box;
+}
+#botao {
+	padding: 20px;
+	text-align: center;
+}
+#botao button {
+	padding: 5px 10px;
+	background: #6C6;
+	color: #fff;
+	font-size: 20px;
+	border: #000 1px dashed;
+}
+#resultado {
+	width: 100%;
+	height: 200px;
+	padding: 5px;
+	border: #39F 1px solid;
+	box-sizing: border-box;
+}
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+	function letrinhas() {
+		$("#resultado").empty();
+		
+		var map={"â":"a","Â":"A","à":"a","À":"A","á":"a","Á":"A","ã":"a","Ã":"A","ê":"e","Ê":"E","è":"e","È":"E","é":"e","É":"E","î":"i","Î":"I","ì":"i","Ì":"I","í":"i","Í":"I","õ":"o","Õ":"O","ô":"o","Ô":"O","ò":"o","Ò":"O","ó":"o","Ó":"O","ü":"u","Ü":"U","û":"u","Û":"U","ú":"u","Ú":"U","ù":"u","Ù":"U","ç":"c","Ç":"C"};
+		var semEspeciais = $('#texto').val().replace(/[\W\[\] ]/g,function(a){return map[a]||a});		
+		var caixaBaixa = semEspeciais.toLowerCase();
+		var lines = caixaBaixa.split(/[ ,.;:()-0123456789]+|\n/);
+		var palavras = [];
+		for (var i = 0; i < lines.length; i++) {
+			if (/\S/.test(lines[i])) {
+				palavras.push($.trim(lines[i]));
+			}
+		}
+
+		var totalPalavras = palavras.length;
+		
+		for(i=0; i<palavras.length; i++) {
+			if(palavras[i].length < 3) {
+				palavras.splice(i, 1);
+				i--;
+			}
+		}
+		
+		for(x=0; x<palavras.length; x++) {
+			var palavraAtual = palavras[x];
+			var tamanhoPalavra = palavraAtual.length;
+			repetidas:
+			for(letraAtual=0; letraAtual<tamanhoPalavra; letraAtual++){
+				for(proximaLetra=(letraAtual+1); proximaLetra<tamanhoPalavra; proximaLetra++){
+					if(palavraAtual.charAt(letraAtual) == palavraAtual.charAt(proximaLetra)) {
+						palavras.splice(x, 1);
+						x--;
+						break repetidas;
+					}
+				}
+			}
+		}
+		
+		if(totalPalavras == 0) {
+			$("#resultado").append("<p><b>Nenhuma</b> palavra encontrada.</p>");
+		} else if(totalPalavras == 1){
+			$("#resultado").append("<p><b>1</b> palavra encontrada.</p>");
+			if(palavras.length == 0) {
+				$("#resultado").append("<p><b>Nenhuma</b> palavra utilizável.</p>");
+			} else {
+				$("#resultado").append("<p><b>"+palavras.length+"</b> palavra utilizável.</p>");
+			}
+		} else {
+			$("#resultado").append("<p><b>"+totalPalavras+"</b> palavras encontradas.</p>");
+			if(palavras.length == 1) {
+				$("#resultado").append("<p><b>"+palavras.length+"</b> palavra utilizável.</p>");
+			} else {
+				$("#resultado").append("<p><b>"+palavras.length+"</b> palavras utilizáveis.</p>");
+			}
+		}
+		
+		for(r=0; r<palavras.length; r++){
+			$("#resultado").append(palavras[r] + " ");
+		}
+	}
+	
+	$("#executa").click(function() {
+		letrinhas();
+	});
+	
+});
+</script>
+</head>
+<body>
+<textarea id="texto"></textarea>
+<div id="botao"><button id="executa">Processar</button></div>
+<div id="resultado"></div>
+
+</body>
+</html>
