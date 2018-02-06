@@ -6,16 +6,16 @@ html,body,p {
 	margin: 0;
 	padding: 0;
 }
-body {
-	padding: 30px;
-}
-#texto {
+body { padding: 30px; }
+#texto, #resultado {
 	width: 100%;
 	height: 200px;
 	padding: 5px;
 	border: #fc0 1px solid;
 	box-sizing: border-box;
 }
+#resultado { border: #39F 1px solid; }
+
 #botao {
 	padding: 20px;
 	text-align: center;
@@ -27,13 +27,6 @@ body {
 	font-size: 20px;
 	border: #000 1px dashed;
 }
-#resultado {
-	width: 100%;
-	height: 200px;
-	padding: 5px;
-	border: #39F 1px solid;
-	box-sizing: border-box;
-}
 </style>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script>
@@ -44,7 +37,7 @@ $(document).ready(function(){
 		var map={"â":"a","Â":"A","à":"a","À":"A","á":"a","Á":"A","ã":"a","Ã":"A","ê":"e","Ê":"E","è":"e","È":"E","é":"e","É":"E","î":"i","Î":"I","ì":"i","Ì":"I","í":"i","Í":"I","õ":"o","Õ":"O","ô":"o","Ô":"O","ò":"o","Ò":"O","ó":"o","Ó":"O","ü":"u","Ü":"U","û":"u","Û":"U","ú":"u","Ú":"U","ù":"u","Ù":"U","ç":"c","Ç":"C"};
 		var semEspeciais = $('#texto').val().replace(/[\W\[\] ]/g,function(a){return map[a]||a});		
 		var caixaBaixa = semEspeciais.toLowerCase();
-		var lines = caixaBaixa.split(/[ ,.;:()-0123456789]+|\n/);
+		var lines = caixaBaixa.split(/[ ,.;:()-0123456789!?]+|\n/);
 		var palavras = [];
 		for (var i = 0; i < lines.length; i++) {
 			if (/\S/.test(lines[i])) {
@@ -76,26 +69,27 @@ $(document).ready(function(){
 			}
 		}
 		
+		var palavrasUnicas = [];
+		$.each(palavras, function(i, el){
+			if($.inArray(el, palavrasUnicas) === -1) palavrasUnicas.push(el);
+		});
+		
 		if(totalPalavras == 0) {
 			$("#resultado").append("<p><b>Nenhuma</b> palavra encontrada.</p>");
 		} else if(totalPalavras == 1){
 			$("#resultado").append("<p><b>1</b> palavra encontrada.</p>");
-			if(palavras.length == 0) {
-				$("#resultado").append("<p><b>Nenhuma</b> palavra utilizável.</p>");
-			} else {
-				$("#resultado").append("<p><b>"+palavras.length+"</b> palavra utilizável.</p>");
-			}
+			palavrasUnicas.length == 0 ?
+				$("#resultado").append("<p><b>Nenhuma</b> palavra utilizável.</p>") :
+				$("#resultado").append("<p><b>1</b> palavra utilizável.</p>");
 		} else {
 			$("#resultado").append("<p><b>"+totalPalavras+"</b> palavras encontradas.</p>");
-			if(palavras.length == 1) {
-				$("#resultado").append("<p><b>"+palavras.length+"</b> palavra utilizável.</p>");
-			} else {
-				$("#resultado").append("<p><b>"+palavras.length+"</b> palavras utilizáveis.</p>");
-			}
+			palavrasUnicas.length == 1 ?
+				$("#resultado").append("<p><b>"+palavrasUnicas.length+"</b> palavra utilizável.</p>") :
+				$("#resultado").append("<p><b>"+palavrasUnicas.length+"</b> palavras utilizáveis.</p>");
 		}
 		
-		for(r=0; r<palavras.length; r++){
-			$("#resultado").append(palavras[r] + " ");
+		for(r=0; r<palavrasUnicas.length; r++){
+			$("#resultado").append(palavrasUnicas[r] + " ");
 		}
 	}
 	
@@ -110,6 +104,5 @@ $(document).ready(function(){
 <textarea id="texto"></textarea>
 <div id="botao"><button id="executa">Processar</button></div>
 <div id="resultado"></div>
-
 </body>
 </html>
